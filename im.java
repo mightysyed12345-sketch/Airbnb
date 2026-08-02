@@ -1,4 +1,4 @@
-public class im  {
+public class Im  {
     public String palindrome(int n)  {
         int t=n;
         int sum=0;
@@ -14,6 +14,6 @@ public class im  {
         }
     }
     public static void main(String[] args) {
-        System.out.println(new im().palindrome(121));
+        System.out.println(new Im().palindrome(121));
     }
 }
