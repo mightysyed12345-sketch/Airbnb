@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "majorproject",
   "version": "1.0.0",
   "description": "",
@@ -15,5 +16,24 @@
     "express": "^5.2.1",
     "method-override": "^3.0.0",
     "mongoose": "^9.9.3"
+=======
+  "name": "project2",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/mightysyed12345-sketch/vs-code-repo#readme",
+  "bugs": {
+    "url": "https://github.com/mightysyed12345-sketch/vs-code-repo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mightysyed12345-sketch/vs-code-repo.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+>>>>>>> b076ab30fbec90bd159e817ab40b4efe34d7458d
   }
 }
