@@ -4,6 +4,7 @@ const mongoose=require("mongoose");
 const Listing=require("./models/listing.js");
 const mongourl='mongodb://127.0.0.1:27017/wanderlust';
 const path=require('path');
+const ejsMate=require("ejs-mate");
 main().then(()=>{
     console.log("connected to DB");
 }).catch(err=>{
@@ -33,6 +34,9 @@ app.get("/listings", async(req,res)=>{
 });
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"views"));
+app.engine('ejs', ejsMate);
+app.use(express.static(path.join(__dirname,"/public")));
+
 //new  route 
 app.get("/listings/new",(req,res)=>{
     res.render("listings/new.ejs");
@@ -73,7 +77,7 @@ app.delete("/listings/:id" ,async(req,res)=>{
     let deletedListing=await Listing.findByIdAndDelete(id);
     console.log(deletedListing);
     res.redirect("/listings");
-})
+});
 app.listen(8080,()=>{
     console.log("server is listening to port 8080");
 });
