@@ -87,3 +87,7 @@ body  {
     background-color:#fe424d !important;
     border:none !important;
 }
+.show-img  {
+    height:40vh;
+    width:60vh;
+}

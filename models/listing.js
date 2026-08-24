@@ -9,14 +9,14 @@ const listingSchema=new Schema({
         type:String,
         required:true,
     },
-    image:  {
+    image: {
         filename:  {
             type:String
         },
         url:  {
-            type:String,
-            default:"https://i.pinimg.com/736x/74/e8/a8/74e8a8e8d03c569c59428160ad26ccee.jpg",
-            set :(v)=> v===""?"https://i.pinimg.com/736x/74/e8/a8/74e8a8e8d03c569c59428160ad26ccee.jpg":v
+            type: String,
+            default: "https://unsplash.com",
+            set: (v) => v === "" ? "https://unsplash.com" : v
         }
     },
     price:Number,
