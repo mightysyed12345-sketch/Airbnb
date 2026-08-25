@@ -83,25 +83,6 @@ app.delete("/listings/:id" ,async(req,res)=>{
     console.log(deletedListing);
     res.redirect("/listings");
 });
-app.post("/listings", async (req, res) => {
-    const { title, description, price, location, country, image } = req.body;
-    
-    // Construct the object manually to match your data.js / database structure
-    const newListing = new Listing({
-        title,
-        description,
-        price,
-        location,
-        country,
-        image: {
-            filename: "listingimage",
-            url: image // Wraps the flat string url into the expected object structure
-        }
-    });
-    
-    await newListing.save();
-    res.redirect("/listings");
-});
 app.listen(8080,()=>{
     console.log("server is listening to port 8080");
 });
