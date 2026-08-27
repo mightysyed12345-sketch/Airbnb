@@ -20,7 +20,7 @@ const listingSchema=new Schema({
         }
     },
     price:Number,
-    country:String,
+    country: String,
     location:String
 });
 const Listing=mongoose.model("Listing",listingSchema);
