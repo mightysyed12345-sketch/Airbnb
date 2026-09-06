@@ -1,27 +1,26 @@
+
 const express=require("express");
 const app=express();
+
 const mongoose=require("mongoose");
-const Listing=require("./models/listing.js");
 const mongourl='mongodb://127.0.0.1:27017/wanderlust';
 const path=require('path');
 const ejsMate=require("ejs-mate");
+const Listing=require("./models/listing.js");
 const wrapAsync=require("./utils/wrapAsync.js");
 const Expresserror=require("./utils/Expresserror.js");
-const {listingSchema}=require("./schema.js");
+const {listingSchema,reviewSchema}=require("./schema.js");
+const Review=require("./models/review.js");
+const listings=require("./routes/listing.js");
+const reviews=require("./routes/review.js");
+
+app.use(express.urlencoded({extended:true}));
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"views"));
 app.engine('ejs', ejsMate);
 app.use(express.static(path.join(__dirname,"public")));
-app.use(express.json());
-app.use(express.urlencoded({extended:true}));
-
-// Debug route to test body parsing
-app.post("/test", (req,res) => {
-    console.log("Headers:", req.headers);
-    console.log("Body:", req.body);
-    res.json({received: req.body, headers: req.headers});
-});
-
+app.use("/listings",listings);
+app.use("/listings/:id/reviews",reviews);
 main().then(()=>{
     console.log("connected to DB");
 }).catch(err=>{
@@ -44,6 +43,7 @@ async function main()  {
 //     console.log("sample was saved");
 //     res.send("successful testing");
 // });
+
 //index route 
 app.get("/listings",wrapAsync(async(req,res)=>{
     const allListings=await Listing.find({});
@@ -59,30 +59,34 @@ app.get("/listings/new",(req,res)=>{
     res.render("listings/new.ejs");
 });
 const validateListing=(req,res,next)=>{
-    let {error}=listingSchema.validate(req.body);
-    if(error)  {
-        let errMsg=error.details.map((el)=>{el.message}).join(",");
-        throw new Expresserror(400,result.error);
-    }else {
-        next();
+    let { error } = listingSchema.validate(req.body);
+    if (error) {
+        let errMsg = error.details.map((el) => el.message).join(", ");
+        next(new Expresserror(400, errMsg));
+        return;
     }
+    next();
 };
+const validateReview=(req,res,next)=>{
+    let { error } = reviewSchema.validate(req.body);
+    if (error) {
+        let errMsg = error.details.map((el) => el.message).join(", ");
+        next(new Expresserror(400, errMsg));
+        return;
+    }
+    next();
+};
+
 //show route 
 app.get("/listings/:id",wrapAsync(async(req,res)=>{
     let {id}=req.params;
-    const listing=await Listing.findById(id);
+    const listing=await Listing.findById(id).populate("reviews");
     res.render("listings/show.ejs",{listing});
 }));
-app.use(express.json());
-app.use(express.urlencoded({extended:true}));
+
 //create the route 
 app.post("/listings",validateListing,
     wrapAsync(async(req,res,next)=>{
-        let result=listingSchema.validate(req.body);
-        console.log(result);
-        if(result.error)  {
-            throw new Expresserror(400,result.error);
-        }
         let newListing=new Listing(req.body.listing);
         await newListing.save();
         res.redirect("/listings");
@@ -90,7 +94,7 @@ app.post("/listings",validateListing,
 //edit route 
 app.get("/listings/:id/edit",wrapAsync(async(req,res)=>{
     let {id}=req.params;
-    const listing=await Listing.findById(id);
+    let listing=await Listing.findById(id);
     res.render("listings/edit.ejs",{listing});
 }));
 const methodOverride=require("method-override");
@@ -108,12 +112,40 @@ app.delete("/listings/:id" ,(wrapAsync(async(req,res)=>{
     console.log(deletedListing);
     res.redirect("/listings");
 })));
-app.use((req,res,next)=>{
-    next(new Expresserror(404,"page Not Found"));
+app.post("/listings/:id/reviews", validateReview, wrapAsync(async(req,res)=>{
+    let listing=await Listing.findById(req.params.id);
+    let newReview =new Review(req.body.review);
+    listing.reviews.push(newReview);
+    await newReview.save();
+    await listing.save();
+    res.redirect(`/listings/${listing._id}`);
+}));
+//delete  review route we are making here
+app.delete("/listings/:id/reviews/:reviewId",wrapAsync(async(req,res)=>{
+    let {id,reviewId}=req.params;
+    await Listing.findByIdAndUpdate(id, {$pull: {reviews: reviewId}});//review array sai review id ko remove karne ke liye $pull use karrray
+    //pull operator removes the existing array all the instances of the value that match the specified condition.
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/listings/${id}`);
+}));
+app.get("/",(req,res)=>{
+    res.send("working root");
 });
+const handleValidationErr=(err)=>{
+    console.log("this was a Validation error.please follow rules");
+    console.log(err);
+    return err;
+};
 app.use((err,req,res,next)=>{
-    let {statusCode=500,message="Something Went Wrong!"}=err;
-    res.status(statusCode).render("error.ejs",{message});
+    if(err.name === "ValidationError" || err instanceof Expresserror)  {
+        err = handleValidationErr(err);
+    }
+    res.status(err.statusCode || 500).send(err.message || "Something went wrong!");
+});
+//Error handling MiddleWare
+app.use((err,req,res,next)=>{
+    console.error(err);
+    res.status(err.statusCode || 500).send(err.message || "Something went wrong!");
 });
 app.listen(8080,()=>{
     console.log("server is listening to port 8080");
