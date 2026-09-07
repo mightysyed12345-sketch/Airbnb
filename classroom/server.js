@@ -1,47 +1,38 @@
 const express=require("express");
 const app=express();
 const users=require("./routers/useri.js");
-const cookieParser=require("cookie-parser");
-
-app.use(express.urlencoded({extended:true}));
+const session=require("express-session");
+const flash=require("connect-flash");
+const path=require("path");
 app.set("view engine","ejs");
-app.set("views","./views");
-app.use(cookieParser("secretcode"));
+app.set("views",path.join(__dirname,"views"));
 
-app.get("/getcookiessigned",(req,res)=>{
-    res.cookie("made-in","india",{signed:true});
-    res.send("sent you a signed cookie");
+const sessionOptions={
+    secret:"mysuperstarsccret",
+    resave:false,
+    saveUninitialized:false,
+};
+app.use(session(sessionOptions));
+app.use(flash());
+app.use((req,res,next)=>{
+    res.locals.errorMsg=req.flash("error");
+    res.locals.succmsg=req.flash("success");
+})
+app.get("/register",(req,res)=>{
+    let {name="anonymous"}=req.query;
+    req.session.name=name;
+    if(name==="anonymous") {
+        req.flash("error","user not registered");
+    }else {
+        req.flash("success","user registered successfully");
+    }
+    req.flash("success","user register successfully");
+    req.session.save(()=>{
+        res.redirect("/hello");
+    })
 });
-app.get("/getcookies",(req,res)=>{
-    res.cookie("great","syedmohammed");
-    res.cookie("alexander","the great");
-    res.send("sent you some cookies");
-});
-app.get("/greet",(req,res)=>{
-    let{name="anonymouse"}=req.cookies;
-    res.send(`hey there ${name}`);
-});
-app.get("/users",(req,res)=>{
-    console.log(req.cookies);
-    res.send("get the router for users");
-});
-app.use("/users",users);
-app.get("/users/:id",(req,res)=>{
-    res.send("get the router for users with id");
-});
-app.get("/verify",(req,res)=>{
-    console.log(req.cookies);
-    console.log(req.signedCookies);
-    res.send("verified cookies");
-});
-app.post("/users",(req,res)=>{
-    res.send("post the router for users");
-});
-app.put("/users/:id",(req,res)=>{
-    res.send("put the router for users with id");
-});
-app.delete("/users/:id",(req,res)=>{
-    res.send("delete the router for users with id");
+app.get("/hello",(req,res)=>{
+    res.render("page.ejs",{name:req.session.name});
 });
 app.listen(3000,()=>{
     console.log("server is running on port 3000");
