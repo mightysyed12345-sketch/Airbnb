@@ -21,6 +21,7 @@ router.post("/", validateReview, wrapAsync(async(req,res)=>{
     listing.reviews.push(newReview);
     await newReview.save();
     await listing.save();
+    req.flash("success","New Review Created!");
     res.redirect(`/listings/${listing._id}`);
 }));
 //delete  review route we are making here
@@ -29,6 +30,7 @@ router.delete("/:reviewId",wrapAsync(async(req,res)=>{
     await Listing.findByIdAndUpdate(id, {$pull: {reviews: reviewId}});//review array sai review id ko remove karne ke liye $pull use karrray
     //pull operator removes the existing array all the instances of the value that match the specified condition.
     await Review.findByIdAndDelete(reviewId);
+    req.flash("success","Review Deleted!");
     res.redirect(`/listings/${id}`);
 }));
 module.exports=router;

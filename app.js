@@ -37,6 +37,7 @@ app.use(session(sessionOptions));
 app.use(flash());//pahle flash ayega phir routes ayegai
 app.use((req,res,next)=>{
     res.locals.success=req.flash("success");
+    res.locals.error=req.flash("error");
     next();
 });
 
@@ -106,6 +107,10 @@ const validateReview=(req,res,next)=>{
 app.get("/listings/:id",wrapAsync(async(req,res)=>{
     let {id}=req.params;
     const listing=await Listing.findById(id).populate("reviews");
+    if(!listing)  {
+        req.flash("error","Listing you requested for does not exist");
+        return res.redirect("/listings");
+    }
     res.render("listings/show.ejs",{listing});
 }));
 
@@ -120,6 +125,10 @@ app.post("/listings",validateListing,
 app.get("/listings/:id/edit",wrapAsync(async(req,res)=>{
     let {id}=req.params;
     let listing=await Listing.findById(id);
+    if(!listing)  {
+        req.flash("error","Listing you requested for does not exist");
+        return res.redirect("/listings");
+    }
     res.render("listings/edit.ejs",{listing});
 }));
 const methodOverride=require("method-override");
@@ -135,6 +144,7 @@ app.delete("/listings/:id" ,(wrapAsync(async(req,res)=>{
     let {id}=req.params;
     let deletedListing=await Listing.findByIdAndDelete(id);
     console.log(deletedListing);
+    req.flash("success","Listing Deleted!");
     res.redirect("/listings");
 })));
 app.post("/listings/:id/reviews", validateReview, wrapAsync(async(req,res)=>{
