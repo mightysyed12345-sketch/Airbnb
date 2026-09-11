@@ -8,10 +8,11 @@
              alt="listing_image">
             <div class="card-body">
                 <p class="card-text"></p>
-                <%=listing.description %><br>
-                &#8377;<%=Number(listing.price).toLocaleString("en-IN")%><br>
-                <p><%=listing.location%>,
-                <%=listing.country %></p>
+                <i> Owned by:<%= listing.owner.username %></i>
+                <p class="card-text" ><%=listing.description %></p>
+                <p class="card-text" >&#8377;<%=Number(listing.price).toLocaleString("en-IN")%></p>
+                <p class="card-text" style="display:inline-block;margin-right:6px" ><%=listing.location%></p>-
+                <p class="card-text" style="display:inline-block"><%=listing.country %></p>
             </div>
         </div>
         <!-- Replace your button section with this clean flex layout -->
