@@ -15,14 +15,16 @@
                 <p class="card-text" style="display:inline-block"><%=listing.country %></p>
             </div>
         </div>
+        <% if (currUser) { %>
         <!-- Replace your button section with this clean flex layout -->
-        <div class="d-flex gap-2 mt-3">
+        <div class="btns">
             <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark btn-sm px-4">Edit</a>
     
             <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE" class="d-inline">
                 <button class="btn btn-danger btn-sm px-4">Delete</button>
             </form>
         </div>
+        <% } %>
     </div>
     <div class="col-8 offset-3">
         <h4>Leave a Review</h4>
@@ -44,7 +46,7 @@
         <% for(review of listing.reviews)  { %>
             <div class="card col-5 ms-3 mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">Jane-Doe</h5>
+                    <h5 class="card-title">@<%= review.author ? review.author.username : "Anonymous" %></h5>
                     <p class="card-text"> Rating: <%= review.comment %></p>
                     <p class="card-text"><%=review.rating %>Stars</p>
                 </div>

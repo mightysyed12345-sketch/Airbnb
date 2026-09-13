@@ -154,7 +154,6 @@ app.get("/listings/:id/edit",wrapAsync(async(req,res)=>{
         req.flash("error","Listing you requested for does not exist");
         return res.redirect("/listings");
     }
-    res.render("listings/edit.ejs",{listing});
 }));
 const methodOverride=require("method-override");
 app.use(methodOverride("_method"));

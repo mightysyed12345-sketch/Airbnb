@@ -91,3 +91,10 @@ body  {
     height:40vh;
     width:60vh;
 }
+.btns {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
