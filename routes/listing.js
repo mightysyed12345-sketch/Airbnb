@@ -1,16 +1,20 @@
 const express=require("express");
 const router=express.Router();
 const wrapAsync=require("../utils/wrapAsync.js");
-const Listing=require("../models/listing.js");
-const Review=require("../models/review.js");
 const {isloggedIn,isOwner,validateListing}=require("../middleware.js");
 const listingController=require("../controllers/listing.js");
+const multer  = require('multer');
+const {storage}=require("../views/cloudConfig.js");
+const upload = multer({ storage });
+
+
 
 router
 .route("/")
 .get(wrapAsync(listingController.index))
 .post(
     isloggedIn,
+    upload.single('listing[image][url]'),
     validateListing,
     wrapAsync(listingController.createlisting)
 );
@@ -22,6 +26,7 @@ router
 .get(wrapAsync(listingController.showListing))
 .put(isloggedIn,
     isOwner,
+    upload.single('listing[image][url]'),
     validateListing,
     wrapAsync(listingController.updatelisting)
 )

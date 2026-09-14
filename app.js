@@ -1,3 +1,7 @@
+if(process.env.NODE_ENV != "production")  {
+    require('dotenv').config()
+}
+
 
 const express=require("express");
 const app=express();
@@ -21,12 +25,15 @@ const flash=require("connect-flash");
 const passport=require("passport");
 const LocalStrategy=require("passport-local");
 const User=require("./models/user.js");
+const methodOverride=require("method-override");
 
 app.use(express.urlencoded({extended:true}));
+app.use(methodOverride("_method"));
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"views"));
 app.engine('ejs', ejsMate);
 app.use(express.static(path.join(__dirname,"public")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const sessionOptions={
     secret:"mysupersecretcode",
@@ -155,8 +162,6 @@ app.get("/listings/:id/edit",wrapAsync(async(req,res)=>{
         return res.redirect("/listings");
     }
 }));
-const methodOverride=require("method-override");
-app.use(methodOverride("_method"));
 //update route 
 app.put("/listings/:id",validateListing,wrapAsync(async(req,res)=>{
     let {id}=req.params;
@@ -199,12 +204,12 @@ app.use((err,req,res,next)=>{
     if(err.name === "ValidationError" || err instanceof Expresserror)  {
         err = handleValidationErr(err);
     }
-    res.status(err.statusCode || 500).send(err.message || "Something went wrong!");
-});
-//Error handling MiddleWare
-app.use((err,req,res,next)=>{
     console.error(err);
-    res.status(err.statusCode || 500).send(err.message || "Something went wrong!");
+    res.status(err.statusCode || err.http_code || 500).json({
+        success: false,
+        error: err.name || "ServerError",
+        message: err.message || "Something went wrong!"
+    });
 });
 app.listen(8080,()=>{
     console.log("server is listening to port 8080");

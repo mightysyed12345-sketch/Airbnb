@@ -139,13 +139,21 @@ body  {
     font-size: 0.9rem;
     font-weight: 400;
 }
+.edit-image-preview {
+    display: block;
+    width: min(100%, 320px);
+    max-height: 220px;
+    margin: 0 0 0.75rem;
+    border-radius: 0.5rem;
+    object-fit: cover;
+}
 .btns {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     gap: 1.25rem;
     margin-top: 2rem;
-    background-color:red;
+    background-color: transparent;
 }
 .reviews-section {
     padding-top: 2.5rem;
