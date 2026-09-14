@@ -52,10 +52,6 @@ body  {
     align-items:space-evenly;
     text-align:center;
 }
-.listing-card  {
-    border:none !important;
-    margin-bottom:2rem;
-}
 .card-img-top  {
     border-radius:1rem !important;
     width:100% !important;
@@ -84,17 +80,144 @@ body  {
     border:none !important;
 }
 .edit-btn  {
-    background-color:#fe424d !important;
+    background-color:#0d6efd !important;
+    color:#fff !important;
     border:none !important;
 }
-.show-img  {
-    height:40vh;
-    width:60vh;
+.delete-btn  {
+    background-color:#dc3545 !important;
+    color:#fff !important;
+    border:none !important;
+}
+.listing-details {
+    width: min(100%, 860px);
+    margin: 0 auto;
+    padding: 2rem 0 4rem;
+}
+.listing-summary {
+    border-bottom: 1px solid #e3e3e3;
+    padding-bottom: 2rem;
+}
+.listing-location {
+    margin: 0 0 0.5rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+.listing-summary h1 {
+    margin: 0 0 1rem;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 600;
+}
+.show-img {
+    display: block;
+    width: 80%;
+    max-height :65vh;
+    border-radius: 1rem;
+    object-fit: cover;
+}
+.listing-info {
+    padding: 1.25rem 0 0;
+}
+.listing-owner,
+.listing-description,
+.listing-price {
+    margin: 0 0 0.75rem;
+}
+.listing-owner {
+    color: #555;
+}
+.listing-description {
+    max-width: 680px;
+    line-height: 1.7;
+}
+.listing-price {
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+.listing-price span {
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 400;
 }
 .btns {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    gap: 0.75rem;
-    margin-top: 1rem;
+    gap: 1.25rem;
+    margin-top: 2rem;
+    background-color:red;
+}
+.reviews-section {
+    padding-top: 2.5rem;
+}
+.review-heading,
+.reviews-heading {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+.review-form {
+    max-width: 640px;
+}
+.review-comment label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+}
+.review-comment textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+.review-submit {
+    display: block;
+    margin: 1rem auto 0;
+}
+.reviews-divider {
+    margin: 2rem 0 1.5rem;
+}
+.reviews-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+}
+.review-card {
+    padding: 1.25rem;
+    border: 1px solid #e3e3e3;
+    border-radius: 0.5rem;
+    background: #fff;
+}
+.review-card .card-body {
+    padding: 0 !important;
+}
+.review-card .card-title {
+    margin-bottom: 0.5rem;
+}
+.review-card form {
+    margin-top: 1.25rem;
+    margin-bottom: 0 !important;
+}
+.btnns  {
+    background-color:#1E3A8A;
+    justify-content:center;
+    align-items:center;
+}
+.review-delete-btn {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+    border: none !important;
+}
+.review-comment-text {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+@media (max-width: 576px) {
+    .listing-details {
+        padding-top: 1.25rem;
+    }
+    .show-img {
+        max-height: 340px;
+    }
+    .btns {
+        flex-wrap: wrap;
+    }
 }
