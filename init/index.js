@@ -1,3 +1,8 @@
+require("dotenv").config();
+const mongoose=require("mongoose");
+const initdata=require("./data.js");
+const Listing=require("../models/listing.js");
+const mbxGeocoding=require("@mapbox/mapbox-sdk/services/geocoding");
 const mongoose=require("mongoose");
 const initdata=require("./data.js");
 const Listing=require("../models/listing.js");

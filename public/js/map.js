@@ -3,7 +3,18 @@ mapboxgl.accessToken = mapToken;
 const map = new mapboxgl.Map({
     container: 'map', // container ID
     style: 'mapbox://styles/mapbox/streets-v12',
-    center: [77.209, 28.6139], // starting position [lng, lat]. Note that lat must be set between -90 and 90
-    zoom: 9 // starting zoom
+    center: coordinates,
+    zoom: 9,
+    attributionControl: true
 });
+
+if (Array.isArray(coordinates) && coordinates.length === 2) {
+    new mapboxgl.Marker({ color: '#fe424d' })
+        .setLngLat(coordinates)
+        .addTo(map);
+} else {
+    console.error('Listing coordinates are invalid:', coordinates);
+}
+
 map.on('load', () => map.resize());
+map.on('error', (event) => console.error('Mapbox map error:', event.error));

@@ -26,6 +26,17 @@ module.exports.showListing=async(req,res)=>{
         req.flash("error","Listing you are requested for does not exist!");
         return res.redirect("/listings");
     }
+    if (!listing.geometry || listing.geometry.coordinates.length !== 2) {
+        const response = await geocodingClient.forwardGeocode({
+            query: `${listing.location}, ${listing.country}`,
+            limit: 1,
+        }).send();
+        const feature = response.body.features[0];
+        if (feature) {
+            listing.geometry = feature.geometry;
+            await listing.save();
+        }
+    }
     res.render("listings/show.ejs",{listing});
 };
 module.exports.createlisting=async(req,res,next)=>{
@@ -33,9 +44,7 @@ module.exports.createlisting=async(req,res,next)=>{
     query: req.body.listing.location,
     limit: 1,
     })
-    .send()
-    console.log(response.body.features[0].geometry);
-    res.send("done!");
+    .send();
     if (req.file) {
         req.body.listing.image = {
             filename: req.file.filename,
@@ -44,7 +53,8 @@ module.exports.createlisting=async(req,res,next)=>{
     }
     const newListing=new Listing(req.body.listing);
     newListing.owner=req.user._id;
-    await newListing.save();
+    newListing.geometry=response.body.features[0].geometry;
+    let savedlisting=await newListing.save();
     req.flash("success","New Listing Created!");
     res.redirect("/listings");
 };
