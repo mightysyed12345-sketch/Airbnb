@@ -20,7 +20,7 @@ router
 );
 //new route 
 router.get("/new",isloggedIn,listingController.renderNewForm);
-
+//creating the listing 
 router
 .route("/:id")
 .get(wrapAsync(listingController.showListing))

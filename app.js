@@ -73,9 +73,9 @@ app.use((req,res,next)=>{
 app.use("/listings",listingRouter);
 app.use("/listings/:id/reviews",reviewRouter);
 app.use("/",userRouter);
-app.get("/",(req,res)=>{
-    res.send("hi iam root");
-});
+// app.get("/",(req,res)=>{
+//     res.send("hi iam root");
+// });
 main().then(()=>{
     console.log("connected to DB");
 }).catch(err=>{
@@ -100,11 +100,6 @@ async function main()  {
 //     res.send("successful testing");
 // });
 
-//index route 
-app.get("/listings",wrapAsync(async(req,res)=>{
-    const allListings=await Listing.find({});
-    res.render("listings/index.ejs",{allListings});
-}));
 // app.set("view engine","ejs");
 // app.set("views",path.join(__dirname,"views"));
 // app.engine('ejs', ejsMate);
@@ -170,7 +165,6 @@ app.put("/listings/:id",validateListing,wrapAsync(async(req,res)=>{
 app.delete("/listings/:id" ,(wrapAsync(async(req,res)=>{
     let {id}=req.params;
     let deletedListing=await Listing.findByIdAndDelete(id);
-    console.log(deletedListing);
     req.flash("success","Listing Deleted!");
     res.redirect("/listings");
 })));
@@ -198,7 +192,7 @@ const handleValidationErr=(err)=>{
     console.log(err);
     return err;
 };
-app.use((err,req,res,next)=>{
+app.use((err,req,res,next)  =>   {
     if(err.name === "ValidationError" || err instanceof Expresserror)  {
         err = handleValidationErr(err);
     }
