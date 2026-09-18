@@ -9,7 +9,7 @@
         <h1 id="listing-title"><%= listing.title %></h1>
         <img src="<%=listing.image.url%>" class="show-img" alt="<%= listing.title %>">
         <div class="listing-info">
-            <p class="listing-owner">Owned by <strong><%= listing.owner.username %></strong></p>
+            <p class="listing-owner">Owned by <strong><%= listing.owner ? listing.owner.username : "Wanderlust host" %></strong></p>
             <p class="listing-description"><%= listing.description %></p>
             <p class="listing-price">&#8377;<%=Number(listing.price).toLocaleString("en-IN")%> <span>per night</span></p>
         </div>
