@@ -6,6 +6,7 @@ const app=express();
 
 const mongoose=require("mongoose");
 const path=require('path');
+const mongourl='mongodb://127.0.0.1:27017/wanderlust';
 const ejsMate=require("ejs-mate");
 const Listing=require("./models/listing.js");
 const wrapAsync=require("./utils/wrapAsync.js");
@@ -18,7 +19,7 @@ const userRouter=require("./routes/user.js");
 const dbUrl=process.env.ATLASDB_URL;
 
 const session=require("express-session");
-const { MongoStore } = require('connect-mongo');
+const MongoStore = require('connect-mongo').default;
 const flash=require("connect-flash");
 const passport=require("passport");
 const LocalStrategy=require("passport-local");
@@ -33,8 +34,8 @@ app.engine('ejs', ejsMate);
 app.use(express.static(path.join(__dirname,"public")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-const store=new MongoStore({
-    mongoUrl: dbUrl,
+const store=MongoStore.create({
+    clientPromise: mongoose.connection.asPromise().then(() => mongoose.connection.getClient()),
     crypto:  {
         secret:process.env.SECRET,
     },
@@ -87,13 +88,10 @@ app.use("/",userRouter);
 // app.get("/",(req,res)=>{
 //     res.send("hi iam root");
 // });
-main().then(()=>{
-    console.log("connected to DB");
-}).catch(err=>{
-    console.log(err);
-});
 async function main()  {
-    await mongoose.connect(dbUrl);
+    await mongoose.connect(dbUrl, {
+        serverSelectionTimeoutMS: 15000,
+    });
 }
 
 //index route 
@@ -214,6 +212,16 @@ app.use((err,req,res,next)  =>   {
         message: err.message || "Something went wrong!"
     });
 });
-app.listen(8080,()=>{
-    console.log("server is listening to port 8080");
+async function startServer() {
+    await main();
+    console.log("connected to DB");
+    const port = process.env.PORT || 8080;
+    app.listen(port,()=>{
+        console.log(`server is listening to port ${port}`);
+    });
+}
+
+startServer().catch((err) => {
+    console.error("Database connection failed:", err.message);
+    process.exit(1);
 });
