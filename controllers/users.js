@@ -1,3 +1,5 @@
+const User=require("../models/user.js");
+
 module.exports.renderlogin=(req,res)=>{
     res.render("users/login.ejs")
 };

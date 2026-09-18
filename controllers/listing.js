@@ -4,11 +4,9 @@ const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapToken=process.env.MAP_TOKEN;
 const geocodingClient = mbxGeocoding({ accessToken:mapToken });
 
-
 module.exports.index=async(req,res)=>{
     const searchTerm = req.query.search?.trim();
     let allListings;
-
     if (searchTerm) {
         allListings = await Listing.find({
             $or: [
@@ -19,7 +17,6 @@ module.exports.index=async(req,res)=>{
     } else {
         allListings = await Listing.find({});
     }
-
     res.render("listings/index.ejs", { allListings, search: searchTerm });
 };
 module.exports.renderNewForm=(req,res)=>{
