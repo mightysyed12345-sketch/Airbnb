@@ -36,7 +36,12 @@ module.exports.showListing=async(req,res)=>{
         req.flash("error","Listing you are requested for does not exist!");
         return res.redirect("/listings");
     }
-    if (!listing.geometry || listing.geometry.coordinates.length !== 2) {
+    const coordinates = listing.geometry?.coordinates;
+    const hasPlaceholderCoordinates = Array.isArray(coordinates)
+        && coordinates.length === 2
+        && coordinates.every((coordinate) => coordinate === 0);
+
+    if (!Array.isArray(coordinates) || coordinates.length !== 2 || hasPlaceholderCoordinates) {
         const response = await geocodingClient.forwardGeocode({
             query: `${listing.location}, ${listing.country}`,
             limit: 1,
