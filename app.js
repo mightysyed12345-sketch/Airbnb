@@ -19,7 +19,6 @@ const userRouter=require("./routes/user.js");
 const dbUrl=process.env.ATLASDB_URL;
 
 const session=require("express-session");
-const MongoStore = require('connect-mongo').default;
 const flash=require("connect-flash");
 const passport=require("passport");
 const LocalStrategy=require("passport-local");
@@ -34,18 +33,7 @@ app.engine('ejs', ejsMate);
 app.use(express.static(path.join(__dirname,"public")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-const store=MongoStore.create({
-    clientPromise: mongoose.connection.asPromise().then(() => mongoose.connection.getClient()),
-    crypto:  {
-        secret:process.env.SECRET,
-    },
-    touchAfter:24*3600,
-});
-store.on("error",(err)=>{
-    console.log("ERROR in MONGO SESSION  STORE",err);
-})
 const sessionOptions={
-    store,
     secret:process.env.SECRET,
     resave:false,
     saveUninitialized:true,
@@ -73,6 +61,17 @@ app.use((req,res,next)=>{
     next();
 });
 
+app.use((req,res,next)=>{
+    if (req.path !== "/" && mongoose.connection.readyState !== 1) {
+        return res.status(503).json({
+            success: false,
+            error: "DatabaseUnavailable",
+            message: "MongoDB is not connected. Add this server IP to MongoDB Atlas Network Access and restart the app."
+        });
+    }
+    next();
+});
+
 // app.get("/demouser", async(req,res)=>{
 //     let fakeUser=new User({
 //         email:"mightysyed12345@gmail.com",
@@ -88,8 +87,8 @@ app.use("/",userRouter);
 // app.get("/",(req,res)=>{
 //     res.send("hi iam root");
 // });
-async function main()  {
-    await mongoose.connect(dbUrl, {
+async function main(connectionUrl)  {
+    await mongoose.connect(connectionUrl, {
         serverSelectionTimeoutMS: 15000,
     });
 }
@@ -213,15 +212,25 @@ app.use((err,req,res,next)  =>   {
     });
 });
 async function startServer() {
-    await main();
-    console.log("connected to DB");
     const port = process.env.PORT || 8080;
+
+    try {
+        await main(dbUrl);
+        console.log("connected to DB");
+    } catch (err) {
+        console.error("Atlas connection failed. Trying local MongoDB:", err.message);
+        await mongoose.disconnect();
+        try {
+            await main(mongourl);
+            console.log("connected to local MongoDB");
+        } catch (localErr) {
+            console.error("Local MongoDB connection failed. The server will still start:", localErr.message);
+        }
+    }
+
     app.listen(port,()=>{
         console.log(`server is listening to port ${port}`);
     });
 }
 
-startServer().catch((err) => {
-    console.error("Database connection failed:", err.message);
-    process.exit(1);
-});
+startServer();

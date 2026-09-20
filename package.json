@@ -1,7 +1,4 @@
 {
-  "engines": {
-    "node": "24.19.0"
-  },
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
@@ -30,5 +27,24 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
-  }
+  },
+  "engines": {
+    "node": "24.19.0"
+  },
+  "name": "majorproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mightysyed12345-sketch/Airbnb.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {git 
+    "url": "https://github.com/mightysyed12345-sketch/Airbnb/issues"
+  },
+  "homepage": "https://github.com/mightysyed12345-sketch/Airbnb#readme"
 }
