@@ -53,6 +53,7 @@ app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+app.use(express.static(path.join(__dirname,"public")))
 
 app.use((req,res,next)=>{
     res.locals.success=req.flash("success");
@@ -193,7 +194,7 @@ app.delete("/listings/:id/reviews/:reviewId",wrapAsync(async(req,res)=>{
     res.redirect(`/listings/${id}`);
 }));
 app.get("/",(req,res)=>{
-    res.send("working root");
+    res.redirect("/listings");
 });
 const handleValidationErr=(err)=>{
     console.log("this was a Validation error.please follow rules");
