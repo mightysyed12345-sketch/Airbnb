@@ -19,11 +19,16 @@ const userRouter=require("./routes/user.js");
 const dbUrl=process.env.ATLASDB_URL;
 
 const session=require("express-session");
+const { MongoStore }=require("connect-mongo");
 const flash=require("connect-flash");
 const passport=require("passport");
 const LocalStrategy=require("passport-local");
 const User=require("./models/user.js");
 const methodOverride=require("method-override");
+
+if (process.env.NODE_ENV === "production") {
+    app.set("trust proxy", 1);
+}
 
 app.use(express.urlencoded({extended:true}));
 app.use(methodOverride("_method"));
@@ -36,11 +41,16 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 const sessionOptions={
     secret:process.env.SECRET,
     resave:false,
-    saveUninitialized:true,
+    saveUninitialized:false,
+    store: MongoStore.create({
+        mongoUrl: dbUrl,
+        touchAfter: 24 * 3600,
+    }),
     cookie:  {
         expires:Date.now()+7*24*60*60*1000,
         maxAge:7*24*60*60*1000,
-        httpOnly:true
+        httpOnly:true,
+        secure: process.env.NODE_ENV === "production"
     },
 };
 
