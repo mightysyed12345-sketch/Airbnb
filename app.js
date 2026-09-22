@@ -16,7 +16,9 @@ const Review=require("./models/review.js");
 const listingRouter=require("./routes/listing.js");
 const reviewRouter=require("./routes/review.js");
 const userRouter=require("./routes/user.js");
-const dbUrl=process.env.ATLASDB_URL;
+const dbUrl = process.env.NODE_ENV === "production"
+    ? process.env.ATLASDB_URL
+    : mongourl;
 
 const session=require("express-session");
 const { MongoStore }=require("connect-mongo");
@@ -229,7 +231,7 @@ async function startServer() {
         await main(dbUrl);
         console.log("connected to DB");
     } catch (err) {
-        console.error("Atlas connection failed. Trying local MongoDB:", err.message);
+        console.error("Configured database connection failed. Trying local MongoDB:", err.message);
         await mongoose.disconnect();
         try {
             await main(mongourl);

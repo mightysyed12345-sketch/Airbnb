@@ -3,7 +3,10 @@ const mongoose=require("mongoose");
 const initdata=require("./data.js");
 const Listing=require("../models/listing.js");
 const mbxGeocoding=require("@mapbox/mapbox-sdk/services/geocoding");
-const dbUrl=process.env.ATLASDB_URL;
+const localDbUrl = "mongodb://127.0.0.1:27017/wanderlust";
+const dbUrl = process.env.NODE_ENV === "production"
+    ? process.env.ATLASDB_URL
+    : localDbUrl;
 
 async function initDB() {
     await mongoose.connect(dbUrl);
